@@ -59,21 +59,21 @@ class Game
 
     end
 
-    def update_board(board, firstPlayer, secondPlayer)
+    def update_board
         #Changes the chessboard square from empty to its respective piece
-        for i in firstPlayer.availablePieces
+        for i in @player1.availablePieces
             board[i.location[0]][i.location[1]] = i.name
         end
 
-        for j in secondPlayer.availablePieces
+        for j in @player2.availablePieces
             board[j.location[0]][j.location[1]] = j.name
         end
     end
 
-    def display_board(board)
+    def display_board
         puts ' _______________________________________________'
         index = 0
-        for i in board
+        for i in @board
             puts '|     '*8 + '|'
             print '|'
             for j in i
@@ -98,8 +98,8 @@ class Game
     def play
         display_rules
         initialize_board
-        update_board(@board, @player1, @player2)
-        display_board(@board)
+        update_board
+        display_board
         currentPlayer = @player1
         otherPlayer = @player2
 
@@ -108,14 +108,11 @@ class Game
 
             #This loop will only exit if the current player is not in check. 
             #It involves two parts: getting a valid move first followed by ensuring the current player is still not in check after the move.
-            #To that end, copies of the board and players are used. This is where I am currently stuck because of shallow copy issues.
+            #To that end, copies of the original state of the board used so that if the player is still in check, everything will be reverted to the original checked state.
             until notChecked
                 acceptChoice = false
-                board = @board.clone
-                currentPlayerCopy = currentPlayer.clone
-                otherPlayerCopy = otherPlayer.clone
 
-                if is_checked?(board, currentPlayerCopy, otherPlayerCopy)
+                if is_checked?(board, currentPlayer, otherPlayer)
                     puts
                     puts '******'
                     puts 'Check!'
@@ -124,21 +121,56 @@ class Game
 
                 #This loop first gets a piece from the user then a destination to move the piece. Finally the piece and destination are checked if valid
                 until acceptChoice
-                    chosenPiece = choose_piece(currentPlayerCopy)
+                    chosenPiece = choose_piece(currentPlayer)
+                    #copy of the original location of the chosen piece
+                    originalLocation = chosenPiece.location
+
                     chosenDestination = choose_Destination(chosenPiece)
-                    acceptChoice = check_move(board, chosenPiece, chosenDestination, currentPlayerCopy, otherPlayerCopy)
+                    #copy of the chosen destination's content, which could either be empty or contain a piece
+                    chosenDestinationContent = board[chosenDestination[0]][chosenDestination[1]]
+
+                    #Flag variable used to revert changes if a piece was eaten
+                    pieceWasEaten = false
+
+                    #If the chosen destination was not empty, Store a copy of the piece on the board
+                    #It should be noted that if this piece is a piece on the same team, check move will handle that. So, the piece that this loop gets is effectively a piece that was on the other team.
+                    if is_otherTeam?(chosenPiece, chosenDestination[0], chosenDestination[1])
+                        for k in otherPlayer.availablePieces
+                            if k.name == chosenDestinationContent
+                                pieceThatWasEaten = k
+                            end
+                        end
+
+                        pieceWasEaten = true
+                    end
+
+                    acceptChoice = check_move(board, chosenPiece, chosenDestination, currentPlayer, otherPlayer)
                 end
 
                 #Here it should update the board and checks if this new move ensures if the current player is not in check
-                update_board(board, currentPlayerCopy, otherPlayerCopy)
-                notChecked = !is_checked?(board, currentPlayerCopy, otherPlayerCopy)
+                update_board
+
+                if !is_checked?(board, currentPlayer, otherPlayer)
+                    notChecked = true
+                else
+                    if pieceWasEaten
+                        #board[chosenPiece.location[0]][chosenPiece.location[1]] = chosenDestinationContent
+                        otherPlayer.availablePieces.push(pieceThatWasEaten)
+
+                    else #Chosen destination was originally empty
+                        board[chosenPiece.location[0]][chosenPiece.location[1]] = '     '
+                    end
+
+                    chosenPiece.location = originalLocation
+                    update_board
+                end
             end
 
             #Should the preceeding section work, the board should be updated
             @board = board
-            update_board(@board, currentPlayer, otherPlayer)
+            update_board
 
-            display_board(@board)
+            display_board
 
             #Swaps players
             if currentPlayer == @player1
