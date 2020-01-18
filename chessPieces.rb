@@ -188,7 +188,6 @@ class Rook
             elsif chosenDestinationXord < chosenPiece.location[0]
                 #checks if every space upto (and not including) the chosen destination is empty
                 for i in ((chosenDestinationXord + 1)...chosenPiece.location[0])
-                    puts i
                     if !is_empty?(board, i, chosenDestinationYord)
                         return false
                     end
@@ -356,7 +355,6 @@ class Queen
                 return true
             elsif chosenDestinationXord < chosenPiece.location[0]
                 for i in ((chosenDestinationXord + 1)...chosenPiece.location[0])
-                    puts i
                     if !is_empty?(board, i, chosenDestinationYord)
                         return false
                     end

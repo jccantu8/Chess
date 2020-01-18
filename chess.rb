@@ -62,11 +62,11 @@ class Game
     def update_board
         #Changes the chessboard square from empty to its respective piece
         for i in @player1.availablePieces
-            board[i.location[0]][i.location[1]] = i.name
+            @board[i.location[0]][i.location[1]] = i.name
         end
 
         for j in @player2.availablePieces
-            board[j.location[0]][j.location[1]] = j.name
+            @board[j.location[0]][j.location[1]] = j.name
         end
     end
 
@@ -106,17 +106,34 @@ class Game
         while !@winner
             notChecked = false
 
-            #This loop will only exit if the current player is not in check. 
-            #It involves two parts: getting a valid move first followed by ensuring the current player is still not in check after the move.
+            #This loop will only exit if the current player is not in check or is checkmated. 
+            #It involves three parts: checking for checkmate, getting a valid move followed by ensuring the current player is still not in check after the move.
             #To that end, copies of the original state of the board used so that if the player is still in check, everything will be reverted to the original checked state.
             until notChecked
                 acceptChoice = false
 
-                if is_checked?(board, currentPlayer, otherPlayer)
-                    puts
-                    puts '******'
-                    puts 'Check!'
-                    puts '******'
+                if is_checked?(@board, currentPlayer, otherPlayer)
+                    if is_checkmated?(@board, currentPlayer, otherPlayer)
+                        puts
+                        puts
+                        puts '***********'
+                        puts 'Checkmate!'
+                        puts '***********'
+                        puts
+                        puts
+
+                        @winner = otherPlayer
+                        break
+                    else
+                        puts
+                        puts
+                        puts '******'
+                        puts 'Check!'
+                        puts '******'
+                        puts
+                        puts
+                    end
+
                 end
 
                 #This loop first gets a piece from the user then a destination to move the piece. Finally the piece and destination are checked if valid
@@ -127,7 +144,7 @@ class Game
 
                     chosenDestination = choose_Destination(chosenPiece)
                     #copy of the chosen destination's content, which could either be empty or contain a piece
-                    chosenDestinationContent = board[chosenDestination[0]][chosenDestination[1]]
+                    chosenDestinationContent = @board[chosenDestination[0]][chosenDestination[1]]
 
                     #Flag variable used to revert changes if a piece was eaten
                     pieceWasEaten = false
@@ -144,13 +161,13 @@ class Game
                         pieceWasEaten = true
                     end
 
-                    acceptChoice = check_move(board, chosenPiece, chosenDestination, currentPlayer, otherPlayer)
+                    acceptChoice = check_move(@board, chosenPiece, chosenDestination, currentPlayer, otherPlayer, false)
                 end
 
-                #Here it should update the board and checks if this new move ensures if the current player is not in check
+                #Here it updates the board and checks if this new move ensures if the current player is not in check
                 update_board
 
-                if !is_checked?(board, currentPlayer, otherPlayer)
+                if !is_checked?(@board, currentPlayer, otherPlayer)
                     notChecked = true
                 else
                     if pieceWasEaten
@@ -158,7 +175,7 @@ class Game
                         otherPlayer.availablePieces.push(pieceThatWasEaten)
 
                     else #Chosen destination was originally empty
-                        board[chosenPiece.location[0]][chosenPiece.location[1]] = '     '
+                        @board[chosenPiece.location[0]][chosenPiece.location[1]] = '     '
                     end
 
                     chosenPiece.location = originalLocation
@@ -166,10 +183,7 @@ class Game
                 end
             end
 
-            #Should the preceeding section work, the board should be updated
-            @board = board
             update_board
-
             display_board
 
             #Swaps players
@@ -181,8 +195,13 @@ class Game
                 otherPlayer = @player2
             end
 
-            #@winner = true
         end
+
+        puts
+        puts '***********'
+        puts "#{@winner.playerColor} wins!"
+        puts '***********'
+        puts
     end
 
     def is_checked?(board, currentPlayer, otherPlayer)
@@ -225,16 +244,89 @@ class Game
         end
     end
 
-    def check_move(board, chosenPiece, chosenDestination, currentPlayer, otherPlayer)
+    def is_checkmated?(board, currentPlayer, otherPlayer)
+        #Pass this flag variable to #check_move so that the invalid message won't display when looking for checkmate
+        comingFromCheckmate = true
+
+        #Cycle through current player pieces and pass every destination on the board to the piece. 
+        #After this is done, if the move was valid, check if the player is still in check.
+        #If so, move on to the next move or piece. However, if the player is no longer in check in this hypothetical scenario,
+        #return false which means the player is not checkmated and the game can continue.
+        #The board is reverted in every situation.
+        for i in currentPlayer.availablePieces
+
+            #All indices for destinations on the board
+            for m in (0..7)
+                for n in (0..7)
+                    chosenDestination = [m, n]
+
+                    #Copies to help revert board. See #play for more information
+                    originalLocation = i.location
+                    chosenDestinationContent = board[chosenDestination[0]][chosenDestination[1]]
+
+                    pieceWasEaten = false
+
+                    if is_otherTeam?(i, chosenDestination[0], chosenDestination[1])
+                        for k in otherPlayer.availablePieces
+                            if k.name == chosenDestinationContent
+                                pieceThatWasEaten = k
+                            end
+                        end
+
+                        pieceWasEaten = true
+                    end
+
+                    if check_move(board, i, chosenDestination, currentPlayer, otherPlayer, comingFromCheckmate)
+
+                        update_board
+
+                        if !is_checked?(board, currentPlayer, otherPlayer)
+                            if pieceWasEaten
+                                otherPlayer.availablePieces.push(pieceThatWasEaten)
+
+                            else
+                                board[i.location[0]][i.location[1]] = '     '
+                            end
+
+                            i.location = originalLocation
+                            update_board
+
+                            return false
+                        else
+                            if pieceWasEaten
+                                otherPlayer.availablePieces.push(pieceThatWasEaten)
+
+                            else
+                                board[i.location[0]][i.location[1]] = '     '
+                            end
+
+                            i.location = originalLocation
+                            update_board
+                        end
+
+                    end
+                end
+            end
+
+        end
+
+        #Player is checkmated then
+        return true
+    end
+
+    def check_move(board, chosenPiece, chosenDestination, currentPlayer, otherPlayer, comingFromCheckmate)
 
         chosenDestinationXord = chosenDestination[0]
         chosenDestinationYord = chosenDestination[1]
 
         #Checks if move abides by the rules
         if !chosenPiece.rules(board, chosenPiece, chosenDestinationXord, chosenDestinationYord)
-            puts
-            puts "This move in invalid. Please try again."
-            puts
+            if !comingFromCheckmate
+                puts
+                puts "This move in invalid. Please try again."
+                puts
+            end
+
             return false
         else
             #Sets location where chosen piece was to empty
