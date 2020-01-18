@@ -1,12 +1,6 @@
 require './chessPieces'
 require './chessPlayers'
 
-########################
-#Confusingly, I have x and y coordinates backwards in the whole program.
-#Note to self. Make sure piece cannot move to its same position
-########################
-
-
 class Game
     attr_accessor :board, :player1, :player2, :winner
 
@@ -90,9 +84,10 @@ class Game
     end
 
     def display_rules
-        puts '-------------------------------------------------------'
-        puts ' Take turns'
-        puts '-------------------------------------------------------'
+        puts '-------------------------------------------------------------------'
+        puts 'Follows the basic rules of chess. However, no castling or promotion'
+        puts 'White starts first. Select a piece and choose a valid destination.'
+        puts '-------------------------------------------------------------------'
     end
 
     def play
@@ -323,8 +318,12 @@ class Game
         if !chosenPiece.rules(board, chosenPiece, chosenDestinationXord, chosenDestinationYord)
             if !comingFromCheckmate
                 puts
+                puts '***************************************'
                 puts "This move in invalid. Please try again."
+                puts '***************************************'
                 puts
+
+                display_board
             end
 
             return false
@@ -352,7 +351,7 @@ class Game
 
     def choose_Destination(chosenPiece)
         puts
-        puts "Where would you like to Destination #{chosenPiece.name} to? Please pick a letter followed by a number. (e.g. B7)"
+        puts "Where would you like to move #{chosenPiece.name} to? Please pick a letter followed by a number. (e.g. B7)"
 
         acceptableDestination = false
 
