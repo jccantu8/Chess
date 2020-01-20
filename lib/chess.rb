@@ -1,5 +1,5 @@
-require './chessPieces'
-require './chessPlayers'
+require './lib/chessPieces.rb'
+require './lib/chessPlayers.rb'
 
 class Game
     attr_accessor :board, :player1, :player2, :winner
@@ -419,5 +419,5 @@ class Game
 
 end
 
-test = Game.new
-test.play
+#test = Game.new
+#test.play

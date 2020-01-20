@@ -1,5 +1,9 @@
 # Chess
 
+    Command line implementation of chess using ruby and rspec. Written by Julio Cantu.
+
+    Features to be considered: en passant, castling, pawn promotion, basic opponent computer A.I., and saving/loading previous games.
+
 ## knightTravails
 
     This program serves as a bit of a helper for chess in that it involves finding the shortest (or one of the shortest) paths for a knight between a starting position and ending position on a chess board.

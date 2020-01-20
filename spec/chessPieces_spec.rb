@@ -1,4 +1,4 @@
-require './chessPieces'
+require './lib/chessPieces.rb'
 
 describe '#assign_name' do
     it 'returns W-Pa1' do
@@ -393,5 +393,6 @@ describe King do
         it 'returns false if king tries to move to its current location' do
             expect(@testKing.rules(@board, @testKing, 5, 5)).to be_falsey
         end
+
     end
 end

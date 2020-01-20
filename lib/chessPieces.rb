@@ -10,7 +10,7 @@ end
 
 def is_empty?(board, chosenDestinationXord, chosenDestinationYord)
     #Empty spaces on the board are represented with 5 spaces
-    if board[chosenDestinationXord][chosenDestinationYord] === '     '
+    if board[chosenDestinationXord][chosenDestinationYord] == '     '
         return true
     else 
         return false
@@ -221,11 +221,11 @@ class Bishop
 
         #Calculates the change in y and the change in x coordinates to be used in calculating the slope of a line.
         #This is because a bishop can only move in a line of slope 1 or -1
-        deltaY = chosenDestinationXord - chosenPiece.location[0]
-        deltaX = chosenDestinationYord - chosenPiece.location[1]
+        deltaY = (chosenDestinationXord - chosenPiece.location[0]).to_f
+        deltaX = (chosenDestinationYord - chosenPiece.location[1]).to_f
 
         #Don't divide by 0 and make sure slope is 1 or -1
-        if (deltaX == 0) or ((deltaY / deltaX).abs != 1)
+        if (deltaX == 0.0) or ((deltaY / deltaX).abs != 1.0)
             return false
         end
 
