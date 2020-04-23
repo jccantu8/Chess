@@ -15,6 +15,10 @@
 
 ![Chess 5](chess5.png?raw=true)
 
+![Chess 6](chess6.png?raw=true)
+
+![Chess 7](chess7.png?raw=true)
+
 ## knightTravails
 
     This program serves as a bit of a helper for chess in that it 
