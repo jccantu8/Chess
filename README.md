@@ -1,8 +1,18 @@
 # Chess
 
-    Command line implementation of chess using ruby and rspec. Written by Julio Cantu.
+    Command line implementation of chess using ruby and rspec.
 
     Features to be considered: en passant, castling, pawn promotion, basic opponent computer A.I., and saving/loading previous games.
+
+    ![Chess 1](chess1.png?raw=true)
+
+    ![Chess 2](chess2.png?raw=true)
+
+    ![Chess 3](chess3.png?raw=true)
+
+    ![Chess 4](chess4.png?raw=true)
+
+    ![Chess 5](chess5.png?raw=true)
 
 ## knightTravails
 
@@ -13,3 +23,5 @@
     To find the path, a breadth search is performed by utilizing a queue where after checking each child of a node, if it is not our ending position, then all of its children will be added to the queue.
 
     The board function(s) are not yet completed, but are not essential to the crux of the problem.
+
+    ![Knight Travails](knight.png?raw=true)
