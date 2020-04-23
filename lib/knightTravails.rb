@@ -122,4 +122,4 @@ class KnightTravails
 end
 
 test = KnightTravails.new
-test.knight_moves([3,3],[0,0])
+test.knight_moves([7,3],[0,2])

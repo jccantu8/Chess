@@ -1,5 +1,5 @@
-require './lib/chessPieces.rb'
-require './lib/chessPlayers.rb'
+require './chessPieces.rb'
+require './chessPlayers.rb'
 
 class Game
     attr_accessor :board, :player1, :player2, :winner
@@ -45,8 +45,8 @@ class Game
         @player2.rook1.location = [0, 0]
         @player2.knight1.location = [0, 1]
         @player2.bishop1.location = [0, 2]
-        @player2.king.location = [0, 3]
-        @player2.queen.location = [0, 4]
+        @player2.queen.location = [0, 3]
+        @player2.king.location = [0, 4]
         @player2.bishop2.location = [0, 5]
         @player2.knight2.location = [0, 6]
         @player2.rook2.location = [0, 7]
@@ -419,5 +419,5 @@ class Game
 
 end
 
-#test = Game.new
-#test.play
+test = Game.new
+test.play
