@@ -5,6 +5,9 @@
     Features to be considered: en passant, castling, pawn promotion,
     basic opponent computer A.I., and saving/loading previous games.
 
+    To run the game, clone the repository and run 'ruby chess.rb' in 
+    a command line prompt. Ruby must be installed.
+
 ![Chess 1](chess1.png?raw=true)
 
 ![Chess 2](chess2.png?raw=true)
